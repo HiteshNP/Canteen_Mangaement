@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Menu · FreshBite{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <h1>Our Menu</h1>
+    <p>Freshly prepared every day · all prices in ₹ (INR)</p>
+  </div>
+
+  <div class="menu-toolbar">
+    <div class="search-box">
+      🔍
+      <input type="text" id="menuSearch" placeholder="Search dishes..." value="{{ query }}" />
+    </div>
+    <div class="chips">
+      <a href="{{ url_for('menu') }}" class="chip {{ 'active' if active == 'all' }}">All</a>
+      {% for c in categories %}
+        <a href="{{ url_for('menu', category=c.id) }}" class="chip {{ 'active' if active == c.id }}">{{ c.icon }} {{ c.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if items %}
+  <div class="menu-grid" style="padding-bottom: 50px;">
+    {% for item in items %}
+    <div class="food-card" data-name="{{ item.name|lower }}">
+      <div class="food-media">
+        <img src="{{ item.img }}" alt="{{ item.name }}" loading="lazy" />
+        <span class="badge-veg {{ 'veg' if item.veg else 'nonveg' }}"></span>
+        {% if item.popular %}<span class="badge-pop">★ Popular</span>{% endif %}
+        {% if not item.available %}<div class="sold-out">SOLD OUT</div>{% endif %}
+      </div>
+      <div class="food-body">
+        <div class="food-top">
+          <h3>{{ item.name }}</h3>
+          <span class="rating">★ {{ item.rating }}</span>
+        </div>
+        <p class="food-desc">{{ item.desc }}</p>
+        <div class="food-foot">
+          <div class="price">{{ item.price|inr }}</div>
+          {% if item.available %}
+          <form method="post" action="{{ url_for('cart_add', item_id=item.id) }}">
+            <button class="add-btn" type="submit">+ Add</button>
+          </form>
+          {% else %}
+          <button class="add-btn" disabled style="opacity:.5; cursor:not-allowed;">Unavailable</button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="em">🔍</div>
+    <h3>No dishes found</h3>
+    <p>Try a different category or search term.</p>
+    <a href="{{ url_for('menu') }}" class="btn btn-primary">Reset filters</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

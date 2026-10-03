@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Menu Management · FreshBite{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-bottom:60px;">
+  <div class="dash-head">
+    <div>
+      <h1>🍽️ Menu Management</h1>
+      <p class="muted">Manage items, pricing and availability · prices in ₹</p>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+      <button class="btn btn-primary" onclick="alert('Add item form — demo only')">+ Add Item</button>
+    </div>
+  </div>
+
+  <div class="panel" style="padding:0; overflow:hidden;">
+    <table class="table">
+      <thead>
+        <tr><th>Item</th><th>Category</th><th>Type</th><th>Price</th><th>Stock</th><th>Rating</th><th>Status</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        {% for i in items %}
+        <tr>
+          <td>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <img src="{{ i.img }}" alt="" style="width:46px; height:46px; border-radius:10px; object-fit:cover;" />
+              <b>{{ i.name }}</b>
+            </div>
+          </td>
+          <td>{{ i.category|capitalize }}</td>
+          <td>
+            <span class="badge-veg {{ 'veg' if i.veg else 'nonveg' }}" style="position:static; display:inline-grid;"></span>
+            {{ 'Veg' if i.veg else 'Non-veg' }}
+          </td>
+          <td><b>{{ i.price|inr }}</b></td>
+          <td style="color:{{ 'var(--red)' if i.stock == 0 else ('var(--amber)' if i.stock <= 25 else 'var(--ink)') }}; font-weight:700;">{{ i.stock }}</td>
+          <td>★ {{ i.rating }}</td>
+          <td>
+            {% if i.available %}
+            <span class="status-pill s-Ready">Available</span>
+            {% else %}
+            <span class="status-pill" style="background:#fee2e2; color:#991b1b;">Unavailable</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" action="{{ url_for('admin_toggle', item_id=i.id) }}">
+              <button class="btn btn-sm {{ 'btn-danger' if i.available else 'btn-ghost' }}" type="submit">
+                {{ 'Disable' if i.available else 'Enable' }}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

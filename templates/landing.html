@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}FreshBite · Smart Canteen Ordering{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-inner">
+    <div>
+      <span class="eyebrow">⚡ Skip the queue. Order in seconds.</span>
+      <h1>Your campus canteen, <span>now digital.</span></h1>
+      <p>Browse the menu, order ahead, pay with UPI and track your food in real time —
+         a faster, cashless &amp; contactless canteen experience. All prices in ₹.</p>
+      <div class="hero-cta">
+        <a href="{{ url_for('menu') }}" class="btn btn-primary btn-lg">Order Now 🍴</a>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost btn-lg">View Dashboard</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><b>20+</b><span>Menu items</span></div>
+        <div class="hero-stat"><b>4.7★</b><span>Avg. rating</span></div>
+        <div class="hero-stat"><b>&lt;10 min</b><span>Avg. prep time</span></div>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="hero-card">
+        <img src="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800" alt="Delicious thali" />
+      </div>
+      <div class="float-chip one"><span class="dot"></span> Order #A12 · Ready</div>
+      <div class="float-chip two">🧾 Paid via UPI · ₹230</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Why FreshBite</span>
+      <h2>Everything your canteen needs, in one place</h2>
+      <p>Built for students, staff and managers — smooth ordering, cashless payments and smart insights.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature"><div class="ic">📱</div><h3>Order Ahead</h3><p>Pre-order from your phone and pick up without standing in line.</p></div>
+      <div class="feature"><div class="ic">💳</div><h3>Cashless Pay</h3><p>Pay instantly via UPI, card or canteen wallet — no change hassles.</p></div>
+      <div class="feature"><div class="ic">⏱️</div><h3>Live Tracking</h3><p>Follow your order from Placed → Preparing → Ready in real time.</p></div>
+      <div class="feature"><div class="ic">🍲</div><h3>Fresh Menu</h3><p>See today's specials, availability and ratings before you order.</p></div>
+      <div class="feature"><div class="ic">📊</div><h3>Smart Analytics</h3><p>Managers get revenue, best-sellers and peak-hour insights.</p></div>
+      <div class="feature"><div class="ic">🔔</div><h3>Kitchen Display</h3><p>Staff get a live order board to prepare and serve faster.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background: var(--mint-50);">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Popular today</span>
+      <h2>Most-loved dishes</h2>
+      <p>Freshly prepared favourites our campus can't get enough of.</p>
+    </div>
+    <div class="menu-grid">
+      {% for item in popular %}
+      <div class="food-card" data-name="{{ item.name|lower }}">
+        <div class="food-media">
+          <img src="{{ item.img }}" alt="{{ item.name }}" loading="lazy" />
+          <span class="badge-veg {{ 'veg' if item.veg else 'nonveg' }}"></span>
+          <span class="badge-pop">★ Popular</span>
+        </div>
+        <div class="food-body">
+          <div class="food-top">
+            <h3>{{ item.name }}</h3>
+            <span class="rating">★ {{ item.rating }}</span>
+          </div>
+          <p class="food-desc">{{ item.desc }}</p>
+          <div class="food-foot">
+            <div class="price">{{ item.price|inr }}</div>
+            <form method="post" action="{{ url_for('cart_add', item_id=item.id) }}">
+              <button class="add-btn" type="submit">+ Add</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align:center; margin-top:34px;">
+      <a href="{{ url_for('menu') }}" class="btn btn-primary btn-lg">Explore Full Menu →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">How it works</span>
+      <h2>Order in 3 simple steps</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="feature"><div class="ic">1️⃣</div><h3>Browse &amp; Add</h3><p>Pick your favourites from the digital menu and add them to your cart.</p></div>
+      <div class="feature"><div class="ic">2️⃣</div><h3>Pay Securely</h3><p>Checkout with UPI, card or wallet and get your token number.</p></div>
+      <div class="feature"><div class="ic">3️⃣</div><h3>Track &amp; Collect</h3><p>Watch the status live and collect your food when it's ready.</p></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

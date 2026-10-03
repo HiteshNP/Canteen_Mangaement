@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Checkout · FreshBite{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px 60px;">
+  <div class="page-head" style="padding:0 0 24px;">
+    <h1>Checkout</h1>
+    <p>Choose a payment method to place your order</p>
+  </div>
+
+  <form method="post" class="split">
+    <div class="panel">
+      <h2>Payment Method</h2>
+      <div class="pay-opts">
+        <label class="pay-opt">
+          <input type="radio" name="payment" value="UPI" checked />
+          <span class="pic">📲</span>
+          <span><b>UPI</b><small>GPay, PhonePe, Paytm &amp; more</small></span>
+        </label>
+        <label class="pay-opt">
+          <input type="radio" name="payment" value="Card" />
+          <span class="pic">💳</span>
+          <span><b>Credit / Debit Card</b><small>Visa, Mastercard, RuPay</small></span>
+        </label>
+        <label class="pay-opt">
+          <input type="radio" name="payment" value="Wallet" />
+          <span class="pic">👛</span>
+          <span><b>Canteen Wallet</b><small>Balance: ₹850</small></span>
+        </label>
+        <label class="pay-opt">
+          <input type="radio" name="payment" value="Cash" />
+          <span class="pic">💵</span>
+          <span><b>Pay at Counter</b><small>Pay with cash on pickup</small></span>
+        </label>
+      </div>
+
+      <h2 style="margin-top:26px;">Pickup Details</h2>
+      <div class="field">
+        <label>Pickup Preference</label>
+        <select>
+          <option>As soon as ready</option>
+          <option>In 15 minutes</option>
+          <option>In 30 minutes</option>
+          <option>At 1:00 PM</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Special instructions (optional)</label>
+        <input type="text" placeholder="e.g. Less spicy, no onions" />
+      </div>
+    </div>
+
+    <div class="panel summary">
+      <h2>Order Summary</h2>
+      {% for line in lines %}
+      <div class="srow"><span>{{ line.item.name }} × {{ line.qty }}</span><span>{{ line.subtotal|inr }}</span></div>
+      {% endfor %}
+      <div class="srow" style="border-top:1px dashed var(--line); margin-top:6px; padding-top:12px;"><span>Subtotal</span><span>{{ total|inr }}</span></div>
+      <div class="srow"><span>GST (5%)</span><span>{{ (total * 0.05)|round|int|inr }}</span></div>
+      <div class="srow"><span>Packaging</span><span>₹10</span></div>
+      <div class="srow total"><span>Total Payable</span><span>{{ (total + (total * 0.05)|round|int + 10)|inr }}</span></div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">Place Order 🎉</button>
+      <p class="muted" style="text-align:center; margin-top:12px; font-size:13px;">By placing this order you agree to our terms.</p>
+    </div>
+  </form>
+</div>
+{% endblock %}

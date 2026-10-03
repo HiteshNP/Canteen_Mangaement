@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Cart · FreshBite{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px 60px;">
+  <div class="page-head" style="padding:0 0 24px;">
+    <h1>Your Cart</h1>
+    <p>Review your items before checkout</p>
+  </div>
+
+  {% if lines %}
+  <div class="split">
+    <div class="panel">
+      <h2>Items ({{ lines|length }})</h2>
+      {% for line in lines %}
+      <div class="cart-row">
+        <img src="{{ line.item.img }}" alt="{{ line.item.name }}" />
+        <div class="cart-info">
+          <h4>{{ line.item.name }}</h4>
+          <span class="muted">{{ line.item.price|inr }} each</span>
+        </div>
+        <form method="post" action="{{ url_for('cart_update', item_id=line.item.id) }}" style="display:flex; align-items:center; gap:14px;">
+          <div class="qty">
+            <button type="submit" name="action" value="dec">−</button>
+            <span>{{ line.qty }}</span>
+            <button type="submit" name="action" value="inc">+</button>
+          </div>
+        </form>
+        <div class="line-total">{{ line.subtotal|inr }}</div>
+        <form method="post" action="{{ url_for('cart_update', item_id=line.item.id) }}">
+          <button class="remove-x" type="submit" name="action" value="remove" title="Remove">✕</button>
+        </form>
+      </div>
+      {% endfor %}
+      <div style="margin-top:18px;">
+        <a href="{{ url_for('menu') }}" class="btn btn-ghost">← Add more items</a>
+      </div>
+    </div>
+
+    <div class="panel summary">
+      <h2>Order Summary</h2>
+      <div class="srow"><span>Subtotal</span><span>{{ total|inr }}</span></div>
+      <div class="srow"><span>GST (5%)</span><span>{{ (total * 0.05)|round|int|inr }}</span></div>
+      <div class="srow"><span>Packaging</span><span>₹10</span></div>
+      <div class="srow total"><span>Total</span><span>{{ (total + (total * 0.05)|round|int + 10)|inr }}</span></div>
+      <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-block btn-lg">Proceed to Checkout →</a>
+      <p class="muted" style="text-align:center; margin-top:12px; font-size:13px;">🔒 Secure cashless payment</p>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="em">🛒</div>
+    <h3>Your cart is empty</h3>
+    <p>Looks like you haven't added anything yet.</p>
+    <a href="{{ url_for('menu') }}" class="btn btn-primary btn-lg">Browse Menu</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Login · FreshBite{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-art">
+    <h2>Welcome back to<br>FreshBite 🥗</h2>
+    <p>Order ahead, pay cashless and skip the canteen queue. Log in to continue.</p>
+    <div class="auth-points">
+      <div><span class="tick">✓</span> Real-time order tracking</div>
+      <div><span class="tick">✓</span> UPI, card &amp; wallet payments in ₹</div>
+      <div><span class="tick">✓</span> Reorder your favourites in one tap</div>
+    </div>
+  </div>
+
+  <div class="auth-form-wrap">
+    <div class="auth-card">
+      <h1>Log in</h1>
+      <p>Choose a role to explore the demo.</p>
+      <form method="post">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="you@campus.edu" required />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="••••••••" />
+        </div>
+        <div class="field">
+          <label>Login as</label>
+          <select name="role">
+            <option value="customer">Customer / Student</option>
+            <option value="staff">Kitchen Staff</option>
+            <option value="admin">Admin / Manager</option>
+          </select>
+          <div class="role-hint">Demo mode — any email works. Pick a role to see its dashboard.</div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Log in →</button>
+      </form>
+      <p class="auth-alt">New here? <a href="{{ url_for('signup') }}">Create an account</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard · FreshBite{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-bottom:60px;">
+  <div class="dash-head">
+    <div>
+      <h1>📊 Admin Dashboard</h1>
+      <p class="muted">Canteen performance overview · all figures in ₹ (INR)</p>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <a href="{{ url_for('admin_menu') }}" class="btn btn-ghost">Manage Menu</a>
+      <a href="{{ url_for('kitchen') }}" class="btn btn-primary">Kitchen View</a>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card g1">
+      <div class="ic">💰</div>
+      <div class="val">{{ stats.revenue|inr }}</div>
+      <div class="lbl">Weekly Revenue <span class="trend">▲ 12%</span></div>
+    </div>
+    <div class="stat-card g2">
+      <div class="ic">🧾</div>
+      <div class="val">{{ stats.orders }}</div>
+      <div class="lbl">Orders (today) <span class="trend">▲ 8%</span></div>
+    </div>
+    <div class="stat-card g3">
+      <div class="ic">📈</div>
+      <div class="val">{{ stats.avg_order|inr }}</div>
+      <div class="lbl">Avg. Order Value <span class="trend">▲ 4%</span></div>
+    </div>
+    <div class="stat-card g4">
+      <div class="ic">🍽️</div>
+      <div class="val">{{ stats['items'] }}</div>
+      <div class="lbl">Active Menu Items</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <div class="card">
+      <h3>Revenue · This Week</h3>
+      <div class="sub">Daily sales in ₹</div>
+      {% set max_rev = weekly|max(attribute='amount') %}
+      <div class="bars">
+        {% for d in weekly %}
+        <div class="bar-col">
+          <div class="bar" data-h="{{ (d.amount / max_rev.amount * 100)|round|int }}" style="height:0;">
+            <span class="tip">{{ d.amount|inr }}</span>
+          </div>
+          <small>{{ d.day }}</small>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Top Selling Items</h3>
+      <div class="sub">By revenue this week</div>
+      {% set max_sold = top_selling|max(attribute='revenue') %}
+      {% for t in top_selling %}
+      <div class="top-item">
+        <div class="top-rank">{{ loop.index }}</div>
+        <div class="meta">
+          <b>{{ t.name }}</b><br>
+          <small>{{ t.sold }} sold</small>
+          <div class="progress"><i data-w="{{ (t.revenue / max_sold.revenue * 100)|round|int }}" style="width:0;"></i></div>
+        </div>
+        <div class="amt">{{ t.revenue|inr }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <div class="card">
+      <h3>Orders by Hour</h3>
+      <div class="sub">Identify peak hours to plan staffing</div>
+      {% set max_hr = hourly|max(attribute='orders') %}
+      <div class="bars">
+        {% for h in hourly %}
+        <div class="bar-col">
+          <div class="bar" data-h="{{ (h.orders / max_hr.orders * 100)|round|int }}" style="height:0; background:linear-gradient(180deg,#6366f1,#4338ca);">
+            <span class="tip">{{ h.orders }} orders</span>
+          </div>
+          <small>{{ h.hour }}</small>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>⚠️ Low Stock Alerts</h3>
+      <div class="sub">Items at or below 25 units</div>
+      {% if low_stock %}
+      {% for i in low_stock %}
+      <div class="top-item">
+        <div class="meta">
+          <b>{{ i.name }}</b><br>
+          <small class="muted">{{ i.price|inr }} · {{ i.category|capitalize }}</small>
+        </div>
+        <div class="amt" style="color:{{ 'var(--red)' if i.stock == 0 else 'var(--amber)' }};">
+          {{ i.stock }} left
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p class="muted">All items are well stocked. ✅</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Recent Orders</h3>
+    <div class="sub">Latest activity across the canteen</div>
+    <table class="table">
+      <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Amount</th><th>Payment</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for o in recent_orders %}
+        <tr>
+          <td><b>{{ o.id }}</b></td>
+          <td>{{ o.customer }}</td>
+          <td>{{ o['items']|length }} items</td>
+          <td><b>{{ o.total|inr }}</b></td>
+          <td>{{ o.payment }}</td>
+          <td><span class="status-pill s-{{ o.status }}">{{ o.status }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

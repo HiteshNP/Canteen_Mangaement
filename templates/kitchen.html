@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Kitchen Dashboard · FreshBite{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-bottom:60px;">
+  <div class="dash-head">
+    <div>
+      <h1>👨‍🍳 Kitchen Display</h1>
+      <p class="muted">Live incoming orders · advance each ticket as you cook &amp; serve</p>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <span class="status-pill s-Placed">{{ active|selectattr('status','equalto','Placed')|list|length }} New</span>
+      <span class="status-pill s-Preparing">{{ active|selectattr('status','equalto','Preparing')|list|length }} Preparing</span>
+      <span class="status-pill s-Ready">{{ active|selectattr('status','equalto','Ready')|list|length }} Ready</span>
+    </div>
+  </div>
+
+  {% if active %}
+  <div class="kds-grid">
+    {% for o in active %}
+    <div class="ticket {{ o.status }}">
+      <div class="ticket-head">
+        <b>{{ o.id }}</b>
+        <span class="tkn">{{ o.token }}</span>
+      </div>
+      <ul class="ticket-items">
+        {% for it in o['items'] %}
+        <li><span>{{ it.name }}</span><span class="q">×{{ it.qty }}</span></li>
+        {% endfor %}
+      </ul>
+      <div class="ticket-foot">
+        <div>
+          <span class="status-pill s-{{ o.status }}">{{ o.status }}</span>
+          <div class="clock">⏱ {{ o.time.strftime('%I:%M %p') }} · {{ o.customer }}</div>
+        </div>
+        {% if o.status != 'Ready' %}
+        <form method="post" action="{{ url_for('kitchen_advance', order_id=o.id) }}">
+          <button class="btn btn-primary btn-sm" type="submit">
+            {% if o.status == 'Placed' %}Start →{% else %}Mark Ready →{% endif %}
+          </button>
+        </form>
+        {% else %}
+        <form method="post" action="{{ url_for('kitchen_advance', order_id=o.id) }}">
+          <button class="btn btn-light btn-sm" type="submit" style="border:1px solid var(--line);">Serve ✓</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="em">🎉</div>
+    <h3>All caught up!</h3>
+    <p>No active orders in the queue right now.</p>
+  </div>
+  {% endif %}
+
+  {% if served %}
+  <h2 style="margin:40px 0 16px; font-size:20px; color:var(--green-900);">Recently Served</h2>
+  <div class="panel" style="padding:0; overflow:hidden;">
+    <table class="table">
+      <thead><tr><th>Order</th><th>Token</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for o in served %}
+        <tr>
+          <td><b>{{ o.id }}</b></td>
+          <td>{{ o.token }}</td>
+          <td>{{ o.customer }}</td>
+          <td>{{ o['items']|length }} items</td>
+          <td><b>{{ o.total|inr }}</b></td>
+          <td><span class="status-pill s-Served">Served</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

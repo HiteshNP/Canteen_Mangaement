@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}My Orders · FreshBite{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px 60px;">
+  <div class="page-head" style="padding:0 0 24px;">
+    <h1>My Orders</h1>
+    <p>Track current orders and view your history</p>
+  </div>
+
+  {% if orders %}
+  <div class="panel" style="padding:0; overflow:hidden;">
+    <table class="table">
+      <thead>
+        <tr><th>Order</th><th>Token</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td><b>{{ o.id }}</b><br><small class="muted">{{ o.time.strftime('%d %b, %I:%M %p') }}</small></td>
+          <td><span class="tkn" style="background:var(--ink); color:#fff; font-weight:800; padding:3px 9px; border-radius:7px; font-size:13px;">{{ o.token }}</span></td>
+          <td>{% for it in o['items'] %}{{ it.name }} ×{{ it.qty }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+          <td><b>{{ o.total|inr }}</b></td>
+          <td>{{ o.payment }}</td>
+          <td><span class="status-pill s-{{ o.status }}">{{ o.status }}</span></td>
+          <td><a href="{{ url_for('order_tracking', order_id=o.id) }}" class="btn btn-ghost btn-sm">Track</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="em">🧾</div>
+    <h3>No orders yet</h3>
+    <p>Your placed orders will appear here.</p>
+    <a href="{{ url_for('menu') }}" class="btn btn-primary btn-lg">Start Ordering</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
